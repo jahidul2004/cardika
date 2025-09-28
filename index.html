@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cardika - Create Beautiful Cards</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/daisyui@4.4.2/dist/full.min.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            #canvas-container {
+                background-image: linear-gradient(
+                        rgba(0, 0, 0, 0.1) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(0, 0, 0, 0.1) 1px,
+                        transparent 1px
+                    );
+                background-size: 20px 20px;
+            }
+            .color-picker {
+                width: 40px;
+                height: 40px;
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body class="bg-base-200">
+        <!-- Header -->
+        <div class="navbar bg-base-100 shadow-lg">
+            <div class="navbar-start">
+                <h1 class="text-xl font-bold text-primary">
+                    <i class="fas fa-birthday-cake mr-2"></i>
+                    Cardika
+                </h1>
+            </div>
+            <div class="navbar-center">
+                <div class="btn-group">
+                    <button class="btn btn-outline btn-sm" onclick="newCard()">
+                        <i class="fas fa-file mr-1"></i> New
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="saveCard()">
+                        <i class="fas fa-download mr-1"></i> Save
+                    </button>
+                </div>
+            </div>
+            <div class="navbar-end">
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-circle">
+                        <i class="fas fa-palette"></i>
+                    </label>
+                    <ul
+                        tabindex="0"
+                        class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-60"
+                    >
+                        <li>
+                            <a onclick="selectTemplate('birthday')"
+                                ><i class="fas fa-birthday-cake mr-2"></i
+                                >Birthday Template</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('anniversary')"
+                                ><i class="fas fa-heart mr-2"></i>Anniversary
+                                Template</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('wedding')"
+                                ><i class="fas fa-ring mr-2"></i>Wedding
+                                Template</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('graduation')"
+                                ><i class="fas fa-graduation-cap mr-2"></i
+                                >Graduation Template</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('christmas')"
+                                ><i class="fas fa-tree mr-2"></i>Christmas
+                                Template</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('valentine')"
+                                ><i class="fas fa-heart-broken mr-2"></i
+                                >Valentine Template</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('newbaby')"
+                                ><i class="fas fa-baby mr-2"></i>New Baby
+                                Template</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('congratulations')"
+                                ><i class="fas fa-trophy mr-2"></i
+                                >Congratulations</a
+                            >
+                        </li>
+                        <li>
+                            <a onclick="selectTemplate('blank')"
+                                ><i class="fas fa-file mr-2"></i>Blank Card</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex h-screen bg-base-200">
+            <!-- Left Sidebar - Tools -->
+            <div class="w-64 bg-base-100 shadow-lg p-4 overflow-y-auto">
+                <h2 class="text-lg font-semibold mb-4">Tools</h2>
+
+                <!-- Tool Buttons -->
+                <div class="space-y-2 mb-6">
+                    <button
+                        class="btn btn-outline w-full justify-start tool-btn active"
+                        data-tool="select"
+                    >
+                        <i class="fas fa-mouse-pointer mr-2"></i> Select
+                    </button>
+                    <button
+                        class="btn btn-outline w-full justify-start tool-btn"
+                        data-tool="text"
+                    >
+                        <i class="fas fa-font mr-2"></i> Text
+                    </button>
+                    <button
+                        class="btn btn-outline w-full justify-start tool-btn"
+                        data-tool="image"
+                    >
+                        <i class="fas fa-image mr-2"></i> Image
+                    </button>
+                    <button
+                        class="btn btn-outline w-full justify-start tool-btn"
+                        data-tool="shapes"
+                    >
+                        <i class="fas fa-shapes mr-2"></i> Shapes
+                    </button>
+                    <button
+                        class="btn btn-outline w-full justify-start tool-btn"
+                        data-tool="icons"
+                    >
+                        <i class="fas fa-star mr-2"></i> Icons
+                    </button>
+                </div>
+
+                <!-- Shapes Panel -->
+                <div id="shapes-panel" class="hidden mb-6">
+                    <h3 class="font-semibold mb-2">Shapes</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addShape('rectangle')"
+                        >
+                            <i class="fas fa-square"></i>
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addShape('circle')"
+                        >
+                            <i class="fas fa-circle"></i>
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addShape('triangle')"
+                        >
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addShape('line')"
+                        >
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addShape('arrow')"
+                        >
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addShape('heart')"
+                        >
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Icons Panel -->
+                <div id="icons-panel" class="hidden mb-6">
+                    <h3 class="font-semibold mb-2">Icons</h3>
+                    <div class="grid grid-cols-4 gap-2 text-2xl">
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('🎉')"
+                        >
+                            🎉
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('🎂')"
+                        >
+                            🎂
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('🎈')"
+                        >
+                            🎈
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('🎁')"
+                        >
+                            🎁
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('💝')"
+                        >
+                            💝
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('🌟')"
+                        >
+                            🌟
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('💖')"
+                        >
+                            💖
+                        </button>
+                        <button
+                            class="btn btn-square btn-outline"
+                            onclick="addIcon('🌹')"
+                        >
+                            🌹
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Image Upload -->
+                <div id="image-panel" class="hidden mb-6">
+                    <h3 class="font-semibold mb-2">Upload Image</h3>
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        class="file-input file-input-bordered w-full"
+                        onchange="uploadImage(event)"
+                    />
+                </div>
+            </div>
+
+            <!-- Center - Canvas Area -->
+            <div class="flex-1 p-4">
+                <div class="bg-white rounded-lg shadow-lg p-4 h-full">
+                    <div
+                        id="canvas-container"
+                        class="w-full h-full flex items-center justify-center"
+                    >
+                        <canvas
+                            id="cardCanvas"
+                            width="600"
+                            height="400"
+                            class="border-2 border-dashed border-gray-300 bg-white"
+                        ></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Properties -->
+            <div class="w-64 bg-base-100 shadow-lg p-4 overflow-y-auto">
+                <h2 class="text-lg font-semibold mb-4">Properties</h2>
+
+                <div id="properties-panel">
+                    <div class="space-y-4">
+                        <!-- Color Controls -->
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Fill Color</span
+                                >
+                            </label>
+                            <input
+                                type="color"
+                                id="fillColor"
+                                class="color-picker"
+                                value="#ff6b6b"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Stroke Color</span
+                                >
+                            </label>
+                            <input
+                                type="color"
+                                id="strokeColor"
+                                class="color-picker"
+                                value="#333333"
+                            />
+                        </div>
+
+                        <!-- Size Controls -->
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Font Size</span
+                                >
+                            </label>
+                            <input
+                                type="range"
+                                id="fontSize"
+                                min="12"
+                                max="72"
+                                value="24"
+                                class="range range-primary"
+                            />
+                            <div
+                                class="w-full flex justify-between text-xs px-2"
+                            >
+                                <span>12</span>
+                                <span>72</span>
+                            </div>
+                        </div>
+
+                        <!-- Font Family -->
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Font Family</span
+                                >
+                            </label>
+                            <select
+                                id="fontFamily"
+                                class="select select-bordered w-full"
+                            >
+                                <option value="Arial">Arial</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Times New Roman">
+                                    Times New Roman
+                                </option>
+                                <option value="Courier New">Courier New</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="Impact">Impact</option>
+                            </select>
+                        </div>
+
+                        <!-- Text Style -->
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Text Style</span
+                                >
+                            </label>
+                            <div class="btn-group">
+                                <input
+                                    type="checkbox"
+                                    id="fontBold"
+                                    class="btn-toggle"
+                                    aria-label="Bold"
+                                />
+                                <label
+                                    for="fontBold"
+                                    class="btn btn-outline btn-sm"
+                                    >B</label
+                                >
+                                <input
+                                    type="checkbox"
+                                    id="fontItalic"
+                                    class="btn-toggle"
+                                    aria-label="Italic"
+                                />
+                                <label
+                                    for="fontItalic"
+                                    class="btn btn-outline btn-sm"
+                                    >I</label
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Opacity -->
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Opacity</span
+                                >
+                            </label>
+                            <input
+                                type="range"
+                                id="opacity"
+                                min="0"
+                                max="100"
+                                value="100"
+                                class="range range-primary"
+                            />
+                            <div
+                                class="w-full flex justify-between text-xs px-2"
+                            >
+                                <span>0%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+
+                        <!-- Image Resize Controls -->
+                        <div id="image-resize-controls" class="hidden">
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Image Size</span
+                                >
+                            </label>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="label-text text-sm"
+                                        >Width</label
+                                    >
+                                    <input
+                                        type="range"
+                                        id="imageWidth"
+                                        min="50"
+                                        max="500"
+                                        value="200"
+                                        class="range range-secondary range-sm"
+                                    />
+                                    <div class="text-center text-xs mt-1">
+                                        <span id="widthValue">200px</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="label-text text-sm"
+                                        >Height</label
+                                    >
+                                    <input
+                                        type="range"
+                                        id="imageHeight"
+                                        min="50"
+                                        max="500"
+                                        value="200"
+                                        class="range range-secondary range-sm"
+                                    />
+                                    <div class="text-center text-xs mt-1">
+                                        <span id="heightValue">200px</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button
+                                        class="btn btn-outline btn-sm flex-1"
+                                        onclick="maintainAspectRatio()"
+                                    >
+                                        <i class="fas fa-lock mr-1"></i> Lock
+                                        Ratio
+                                    </button>
+                                    <button
+                                        class="btn btn-outline btn-sm flex-1"
+                                        onclick="resetImageSize()"
+                                    >
+                                        <i class="fas fa-redo mr-1"></i> Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Layer Controls -->
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-semibold"
+                                    >Layers</span
+                                >
+                            </label>
+                            <div class="btn-group-vertical w-full">
+                                <button
+                                    class="btn btn-outline btn-sm"
+                                    onclick="moveToFront()"
+                                >
+                                    <i class="fas fa-arrow-up mr-1"></i> Bring
+                                    Front
+                                </button>
+                                <button
+                                    class="btn btn-outline btn-sm"
+                                    onclick="moveToBack()"
+                                >
+                                    <i class="fas fa-arrow-down mr-1"></i> Send
+                                    Back
+                                </button>
+                                <button
+                                    class="btn btn-outline btn-sm btn-error"
+                                    onclick="deleteSelected()"
+                                >
+                                    <i class="fas fa-trash mr-1"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
