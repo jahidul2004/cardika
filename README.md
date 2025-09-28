@@ -1,4 +1,6 @@
-# 🎨 Card Editor - Advanced Birthday & Greeting Card Creator
+<img src="https://i.ibb.co.com/CsMn6rnC/image.png">
+
+# 🎨 Cardika - Advanced Birthday & Greeting Card Creator
 
 A powerful HTML5 canvas-based card editor with beautiful templates and comprehensive editing tools.
 
